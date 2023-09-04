@@ -1,3 +1,5 @@
+# https://hades.mech.northwestern.edu/index.php/Stability_of_an_Assembly_Project
+
 import numpy as np
 import scipy.optimize as opt
 
@@ -10,6 +12,11 @@ contacts = np.array([
 
 
 for body in bodies:
-    body
-    opt.linprog(c, A_ub, b_ub, A_eq, b_eq, bounds, method, callback, options, x0)
+    # each 
+    for joint in joints(body):
+        # define all wrenches
+        F = np.array([0, 0, -9.81*body[2]])
+
+# add ext wrenches
+opt.linprog(c, A_ub, b_ub, A_eq, b_eq, bounds, method, callback, options, x0)
 
