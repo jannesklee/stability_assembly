@@ -1,7 +1,7 @@
 # https://hades.mech.northwestern.edu/index.php/Stability_of_an_Assembly_Project
 
 import numpy as np
-import scipy.optimize as opt
+#import scipy.optimize as opt
 
 bodies =  np.array([[25, 35, 2],[66, 42, 5]])
 contacts = np.array([
@@ -11,12 +11,35 @@ contacts = np.array([
     [2, 0, 72, 0 , np.pi/2., 0.50]])
 
 
-for body in bodies:
-    # each 
-    for joint in joints(body):
-        # define all wrenches
-        F = np.array([0, 0, -9.81*body[2]])
+# set up equation system
+for body_index, body in enumerate(bodies):
+    Fbody_ext = np.array([[0], [0], [-9.81*body[2]]])
 
-# add ext wrenches
-opt.linprog(c, A_ub, b_ub, A_eq, b_eq, bounds, method, callback, options, x0)
+    # add joint for every contact that involves body
+    Fbody = []
+    for i, joint in enumerate(contacts):
+        # define all wrenches
+        if body_index == (joint[0]-1) or body_index == (joint[1]-1):
+            px = joint[2]
+            py = joint[3]
+            fx = joint[5]*np.cos(joint[4])
+            fy = joint[5]*np.sin(joint[4])
+            m = px*fy-py*fx
+
+            Fi = np.array([m, fx, fy])
+
+            if body_index == (joint[1]-1):
+                Fi = -Fi
+
+            Fbody.append(Fi)
+
+    print(np.shape(np.array(Fbody).T))
+    print(np.shape(np.array(Fbody_ext).T))
+
+
+    # add ext wrenches
+    # constraint
+    #k_bounds = (0, None)
+    #f = np.ones([1,np.shape()])
+    #opt.linprog(c, A_ub, b_ub, A_eq, b_eq, bounds, method, callback, options, x0)
 
