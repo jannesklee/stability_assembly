@@ -1,7 +1,7 @@
 # https://hades.mech.northwestern.edu/index.php/Stability_of_an_Assembly_Project
 
 import numpy as np
-#import scipy.optimize as opt
+import scipy.optimize as opt
 
 bodies =  np.array([[25, 35, 2],[66, 42, 5]])
 contacts = np.array([
@@ -13,7 +13,7 @@ contacts = np.array([
 
 # set up equation system
 for body_index, body in enumerate(bodies):
-    Fbody_ext = np.array([[0], [0], [-9.81*body[2]]])
+    Fbody_ext = np.array([[0,0,-9.81*body[2]]])
 
     # add joint for every contact that involves body
     Fbody = []
@@ -33,13 +33,15 @@ for body_index, body in enumerate(bodies):
 
             Fbody.append(Fi)
 
-    print(np.shape(np.array(Fbody).T))
-    print(np.shape(np.array(Fbody_ext).T))
-
+    Fbody = np.array(Fbody)
+    n_joints = np.shape(Fbody)[0]
 
     # add ext wrenches
     # constraint
-    #k_bounds = (0, None)
-    #f = np.ones([1,np.shape()])
-    #opt.linprog(c, A_ub, b_ub, A_eq, b_eq, bounds, method, callback, options, x0)
+    c = np.ones([1, n_joints])
+    b = -np.ones([1, n_joints])
+    A = np.identity(n_joints)
+    k_bounds = (0, None)
+    res = opt.linprog(c.T, A_eq=Fbody.T, b_eq=-Fbody_ext.T, bounds=k_bounds)
+    print(res.x)
 
