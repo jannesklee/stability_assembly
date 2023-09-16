@@ -3,30 +3,47 @@
 import numpy as np
 import scipy.optimize as opt
 
-## NOTE: unfortunately both version show stability. I searched for a long time
-# but did not find the error. If you have an suggestions I would be happy for
-# your help
-
+## test examples
 # unstable constellation
-bodies =  np.array([
-    [25, 35, 2],
-    [66, 42, 5]])
-contacts = np.array([
-    [1, 2, 60, 60, np.pi   , 0.50],
-    [1, 0, 0 , 0 , np.pi/2., 0.10],
-    [2, 0, 60, 0 , np.pi/2., 0.50],
-    [2, 0, 72, 0 , np.pi/2., 0.50]])
-
-# stable constellation
+#print("Setting up unstable test constellation")
 #bodies =  np.array([
 #    [25, 35, 2],
-#    [66, 42, 10]])
+#    [66, 42, 5]])
 #contacts = np.array([
-#    [1, 2, 60, 60, np.pi, 0.50],
-#    [1, 0, 0 , 0 , np.pi/2., 0.50],
+#    [1, 2, 60, 60, np.pi   , 0.50],
+#    [1, 0, 0 , 0 , np.pi/2., 0.10],
 #    [2, 0, 60, 0 , np.pi/2., 0.50],
 #    [2, 0, 72, 0 , np.pi/2., 0.50]])
 
+# stable constellation
+print("Setting up stable test constellation")
+bodies =  np.array([
+    [25, 35, 2],
+    [66, 42, 10]])
+contacts = np.array([
+    [1, 2, 60, 60, np.pi, 0.50],
+    [1, 0, 0 , 0 , np.pi/2., 0.50],
+    [2, 0, 60, 0 , np.pi/2., 0.50],
+    [2, 0, 72, 0 , np.pi/2., 0.50]])
+
+
+## setting up three body example
+#mu = 1e-3 # friction coefficient
+#print("Setting up three body arch structure example.")
+#print("Friction mu=" + str(mu))
+#bodies =  np.array([
+#    [-30, 15,  4],
+#    [ 30, 15,  4],
+#    [  0, 30,  4]])
+#contacts = np.array([
+#    [1, 0, -50,  0, 1./2.*np.pi, mu],
+#    [1, 0, -20,  0, 1./2.*np.pi, mu],
+#    [2, 0,  50,  0, 1./2.*np.pi, mu],
+#    [2, 0,  20,  0, 1./2.*np.pi, mu],
+#    [1, 3, -10, 20, 5./4.*np.pi, mu],
+#    [1, 3, -30, 40, 5./4.*np.pi, mu],
+#    [2, 3,  10, 20, 7./4.*np.pi, mu],
+#    [2, 3,  30, 40, 7./4.*np.pi, mu]])
 
 # allocate arrays
 Fbody = np.zeros([len(bodies)*3, len(contacts)*2]);
@@ -43,7 +60,7 @@ for body_index, body in enumerate(bodies):
     # add joint for every contact that involves body
     for i, joint in enumerate(contacts):
         # get both wrenches of cone from normal angle
-        for j, cone_angle in enumerate([-np.pi/4., +np.pi/4.]):
+        for j, cone_angle in enumerate([-np.arctan(joint[5]), +np.arctan(joint[5])]):
             # calculate Fbody for all values
             if joint[0] == body_index+1 or joint[1] == body_index+1:
                 px = joint[2]
@@ -68,3 +85,4 @@ if res.success:
     print(res.x)
 else:
     print("The assembly is unstable.")
+    print(res)
